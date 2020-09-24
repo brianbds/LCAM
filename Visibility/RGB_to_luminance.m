@@ -1,5 +1,10 @@
 clear lum
-[files,path]= uigetfile('MultiSelect','on','*.jpg');
+i=1;
+while 1==1
+    [fi,pa]= uigetfile('MultiSelect','on','*.jpg');
+    if str2double(string(pa))==0; break; end
+    files{i}=fi;path(i)=string(pa);clear fi pa; i=i+1;
+end
 if ischar(files);N=1;else;N=length(files);end
 RGBMultiplier=[0.2126,0.7152,0.0722];
 luminance=zeros([N,1]);

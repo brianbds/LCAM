@@ -40,7 +40,7 @@ for k=1:g
     coor=[floor(mean(coor([1,2],1))) ,floor(mean(coor([1,3],2))) ;floor(mean(coor([3,4],1))) ,floor(mean(coor([2,4],2)))];
     
     for i=1:samples
-        picture=double(imread(string(fullfile(path(k),files{k}(i)))))./255;
+        picture=double(imread(char(fullfile(path(k),files{k}(i)))))./255;
         [r,c,~]=size(picture);
         if r>c;picture=rot90(picture);end
         picture=picture(coor(1,1):coor(2,1),coor(1,2):coor(2,2),:);

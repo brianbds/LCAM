@@ -1,21 +1,56 @@
-clear lum
-i=1;
+clear 
+i=1;samples = 50;
 while 1==1
     [fi,pa]= uigetfile('MultiSelect','on','*.jpg');
     if str2double(string(pa))==0; break; end
+    
+    I=1./double(imread(fullfile(pa,fi{1,i})));
+    [r,c,~]=size(I);
+    if r>c
+        figure,imshow(rot90(I),[])
+    else
+        figure,imshow(I,[])
+    end
+    [coor(1,2),coor(1,1)] = ginput(1);
+    hold on;
+    plot(coor(1,2),coor(1,1),'r+', 'MarkerSize', 25);
+    [coor(2,2),coor(2,1)] = ginput(1);
+    plot(coor(2,2),coor(2,1),'b+', 'MarkerSize', 25);
+    [coor(3,2),coor(3,1)] = ginput(1);
+    plot(coor(3,2),coor(3,1),'r+', 'MarkerSize', 25);
+    [coor(4,2),coor(4,1)] = ginput(1);
+    plot(coor(4,2),coor(4,1),'b+', 'MarkerSize', 25);
+    close all
+    Acoor(:,:,i)=floor(coor);
+    
     files{i}=fi;path(i)=string(pa);clear fi pa; i=i+1;
 end
-if ischar(files);N=1;else;N=length(files);end
+clear I
 RGBMultiplier=[0.2126,0.7152,0.0722];
-luminance=zeros([N,1]);
-lum=zeros([N,1]);
-for i=1:N
-   filename=string(fullfile(path,files(i)));
-   picture=double(imread(filename));
-   picture=picture(:,:,1).*RGBMultiplier(1)+picture(:,:,2).*RGBMultiplier(2)+picture(:,:,3).*RGBMultiplier(3);
-   luminance(i,1)=sum(sum(picture));
-   picture(picture<0.01)=0;
-   lum(i,1)=sum(sum(picture));
+lum=zeros([samples,1]);
+g=length(path);
+for k=1:g
+    s=size(files{1,k});
+    if s(2)<samples
+        files{1,k}(end+1:samples)=files{1,k}(end);
+    end
+    coor=sortrows(Acoor(:,:,g));
+    coor([1,2],:)=sortrows(coor([1,2],:),2);
+    coor([3,4],:)=sortrows(coor([3,4],:),2);
+    coor=[floor(mean(coor([1,2],1))) ,floor(mean(coor([1,3],2))) ;floor(mean(coor([3,4],1))) ,floor(mean(coor([2,4],2)))];
+    
+    for i=1:samples
+        picture=double(imread(string(fullfile(path(k),files{k}(i)))))./255;
+        [r,c,~]=size(picture);
+        if r>c;picture=rot90(picture);end
+        picture=picture(coor(1,1):coor(2,1),coor(1,2):coor(2,2),:);
+        if i==1;imshow(picture.*255);pause(2);close all;end
+        picture(picture<=0.04045)=picture(picture<=0.04045)./12.92;
+        picture(picture>0.04045)=(((picture(picture>0.04045)+0.055)./1.055)).^2.4;
+        picture=picture(:,:,1).*RGBMultiplier(1)+picture(:,:,2).*RGBMultiplier(2)+picture(:,:,3).*RGBMultiplier(3);
+        picture(picture<0.001)=0;
+        lum(i,k)=sum(sum(picture));
+    end
 end
 plot(lum)
-clear N i filename files luminance picture RGBMultiplier
+clear N i filename files luminance picture RGBMultiplier Acoor c coor fi g k pa r s

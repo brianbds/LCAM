@@ -25,6 +25,7 @@ while 1==1
     
     files{i}=fi;path(i)=string(pa);clear fi pa; i=i+1;
 end
+clear I
 RGBMultiplier=[0.2126,0.7152,0.0722];
 g=length(path);
 lum=zeros([samples,g*3]);
@@ -34,16 +35,8 @@ for k=1:g
         files{1,g}(end+1:samples)=files{1,g}(end);
     end
     coor=sortrows(Acoor(:,:,g));
-    if coor(1,2)>coor(2,2)
-        l=coor(2,:);
-        coor(2,:)=coor(1,:);
-        coor(1,:)=l;
-    end
-    if coor(3,2)>coor(4,2)
-        l=coor(4,:);
-        coor(4,:)=coor(3,:);
-        coor(3,:)=l;
-    end
+    coor([1,2],:)=sortrows(coor([1,2],:),2);
+    coor([3,4],:)=sortrows(coor([3,4],:),2);
     clear l
     t=max(coor(:,1)-min(coor(:,1)))<max(coor(:,2)-min(coor(:,2)));
     

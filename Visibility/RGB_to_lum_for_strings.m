@@ -2,8 +2,8 @@
 %the 2nd stripe is selected in a box and the TOP/BOTTOM stripe is boxed
 %automatically
 %   /´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´\                 /´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´\                                                                                                                        
-%  |                                |                |                                                        |                                                                 
-%  |   ||||||||||||||||||||             |                |      1      ||||||||||||||||||||        3   |                                                                                             
+%  |                                                        |                |                                                        |                                                                 
+%  |             ||||||||||||||||||||             |                |      1      ||||||||||||||||||||        3   |                                                                                             
 %  |                                                        |    ==>    |        XˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇˇX  |                                                                        
 %  |              ||||||||||||||||||||            |                |       |       ||||||||||||||||||||      |   |                                                                                             
 %  |                                                        |                |       X________________________X  |                                                                
@@ -13,34 +13,13 @@
 clear
 samples = 50; % Number of samples
 RGBMultiplier=[0.2126,0.7152,0.0722]; % RGB multiplying values
-
-i=1; 
-while 1==1
-    [fi,pa]= uigetfile('MultiSelect','on','*.jpg');
-    if str2double(string(pa))==0; break; end
-    
-    I=1./double(imread(fullfile(pa,fi{1,i})));
-    [r,c,~]=size(I);
-    if r>c
-        figure,imshow(rot90(I),[])
-    else
-        figure,imshow(I,[])
-    end
-     % Selecting corners on a picture
-    [coor(1,2),coor(1,1)] = ginput(1);
-    hold on;
-    plot(coor(1,2),coor(1,1),'r+', 'MarkerSize', 25);
-    [coor(2,2),coor(2,1)] = ginput(1);
-    plot(coor(2,2),coor(2,1),'b+', 'MarkerSize', 25);
-    [coor(3,2),coor(3,1)] = ginput(1);
-    plot(coor(3,2),coor(3,1),'r+', 'MarkerSize', 25);
-    [coor(4,2),coor(4,1)] = ginput(1);
-    plot(coor(4,2),coor(4,1),'b+', 'MarkerSize', 25);
-    close all
-    Acoor(:,:,i)=floor(coor);
-    files{i}=fi;path(i)=string(pa);clear fi pa; i=i+1;
+%If files put 1 if direcotries put 2
+fOd=1 ;
+if fOd==1
+    [files, path, Acoor]=get_files;
+else
+    [files, path, Acoor]=get_directories;
 end
-clear I
 g=length(path);
 lum=zeros([samples,g*3]);
 for k=1:g
@@ -76,6 +55,7 @@ for k=1:g
     for i=1:samples
         pic=imread(char(fullfile(path(k),files{k}(i))));
         [r,c,~]=size(pic);
+        coor(:,:,1)=check_size(coor(:,:,1),r,c);  coor(:,:,2)=check_size(coor(:,:,2),r,c);  coor(:,:,3)=check_size(coor(:,:,3),r,c);
         if r>c
             pic=rot90(pic);
         end
@@ -87,7 +67,7 @@ for k=1:g
             picture(picture>0.04045)=(((picture(picture>0.04045)+0.055)./1.055)).^2.4;
             picture=picture(:,:,1).*RGBMultiplier(1)+picture(:,:,2).*RGBMultiplier(2)+picture(:,:,3).*RGBMultiplier(3);
             picture(picture<0.001)=0;
-            lum(i,k*3+o-3)=sum(sum(picture));
+            lum(i,k*3+o-3)=mean2(nonzeros(picture));
         end
     end
 end

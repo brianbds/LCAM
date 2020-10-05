@@ -12,17 +12,16 @@
 
 clear
 samples = 50; % Number of samples
-RGBMultiplier=[0.2126,0.7152,0.0722]; % RGB multiplying values
 %If files put 1 if direcotries put 2
-fOd=1 ;
+fOd=2 ;
 if fOd==1
     [files, path, Acoor]=get_files;
 else
     [files, path, Acoor]=get_directories;
 end
-g=length(path);
-lum=zeros([samples,g*3]);
-for k=1:g
+long=length(path);
+lum=zeros([samples,long*3]);
+for k=1:long
     s=size(files{1,k});
     if s<samples
         files{1,k}(end+1:samples)=files{1,k}(end);
@@ -53,7 +52,7 @@ for k=1:g
     end
    
     for i=1:samples
-        pic=imread(char(fullfile(path(k),files{k}(i))));
+        pic=double(imread(char(fullfile(path(k),files{k}(i)))))./255;
         [r,c,~]=size(pic);
         coor(:,:,1)=check_size(coor(:,:,1),r,c);  coor(:,:,2)=check_size(coor(:,:,2),r,c);  coor(:,:,3)=check_size(coor(:,:,3),r,c);
         if r>c
@@ -61,16 +60,12 @@ for k=1:g
         end
         for o=1:3
             %Core processing loop
-            picture=double(pic(coor(1,1,o):coor(2,1,o),coor(1,2,o):coor(2,2,o),:))./255;
+            picture=pic(coor(1,1,o):coor(2,1,o),coor(1,2,o):coor(2,2,o),:);
             if i==1;imshow(picture.*255);pause(2);close all;end
-            picture(picture<=0.04045)=picture(picture<=0.04045)./12.92;
-            picture(picture>0.04045)=(((picture(picture>0.04045)+0.055)./1.055)).^2.4;
-            picture=picture(:,:,1).*RGBMultiplier(1)+picture(:,:,2).*RGBMultiplier(2)+picture(:,:,3).*RGBMultiplier(3);
-            picture(picture<0.001)=0;
-            lum(i,k*3+o-3)=mean2(nonzeros(picture));
+            lum(i,k*3+o-3)=RGB2lum(reshape(picture(:),[],3));
         end
     end
 end
 path=path(:);
-clear N i filename files luminance picture RGBMultiplier Acoor c coor d l k i r t pa fi g I o pic s
+clear N i filename files luminance picture RGBMultiplier Acoor c coor d l k i r t pa fi long I o pic s fOd
 plot(lum)

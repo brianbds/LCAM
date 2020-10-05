@@ -12,7 +12,7 @@
 
 clear 
 %If files put 1 if direcotries put 2
-fOd= 1 ;
+fOd= 2 ;
 samples = 50; % Number of samples
 if fOd==1
     [files, path, Acoor]=visLib.get_files;
@@ -36,7 +36,7 @@ for k=1:long
     imshow(I);pause(2);close all; clear I
     % Core processing loop
     for i=1:samples
-        picture=double(imread(char(fullfile(path(k),files{k}(i)))))./255;imshow(mask./(picture.*255));pause(2);close all;
+        picture=double(imread(char(fullfile(path(k),files{k}(i)))))./255;
         [r,c,~]=size(picture);
         if r>c;picture=rot90(picture);end
         lum(i,k)=visLib.RGB2lum(reshape(picture([mask,mask,mask]),[],3));

@@ -26,25 +26,7 @@ classdef visLib
             end
             together_coor=zeros([4 2 u]); i=1; clear rw filedatas
             while i<=u
-                I=1./double(imread(fullfile(path(i),files{1,i}(1,1))));
-                [r,c,~]=size(I);
-                if r>c
-                    figure,imshow(rot90(I),[])
-                else
-                    figure,imshow(I,[])
-                end
-                % Selecting corners on a picture
-                [coor(1,2),coor(1,1)] = ginput(1);
-                hold on;
-                plot(coor(1,2),coor(1,1),'r+', 'MarkerSize', 25);
-                [coor(2,2),coor(2,1)] = ginput(1);
-                plot(coor(2,2),coor(2,1),'b+', 'MarkerSize', 25);
-                [coor(3,2),coor(3,1)] = ginput(1);
-                plot(coor(3,2),coor(3,1),'r+', 'MarkerSize', 25);
-                [coor(4,2),coor(4,1)] = ginput(1);
-                plot(coor(4,2),coor(4,1),'b+', 'MarkerSize', 25);
-                close all
-                together_coor(:,:,i)=floor(coor);
+                together_coor(:,:,i)=visLib.get_coordinates(path(i),files{1,i}(1,1));
                 i=i+1;
             end
         end
@@ -54,30 +36,32 @@ classdef visLib
             while 1==1
                 [fi,pa]= uigetfile('MultiSelect','on','*.jpg');
                 if str2double(string(pa))==0; break; end
-                
-                I=1./double(imread(fullfile(pa,fi{1,i})));
-                [r,c,~]=size(I);
-                if r>c
-                    figure,imshow(rot90(I),[])
-                else
-                    figure,imshow(I,[])
-                end
-                % Selecting corners on a picture
-                [coor(1,2),coor(1,1)] = ginput(1);
-                hold on;
-                plot(coor(1,2),coor(1,1),'r+', 'MarkerSize', 25);
-                [coor(2,2),coor(2,1)] = ginput(1);
-                plot(coor(2,2),coor(2,1),'b+', 'MarkerSize', 25);
-                [coor(3,2),coor(3,1)] = ginput(1);
-                plot(coor(3,2),coor(3,1),'r+', 'MarkerSize', 25);
-                [coor(4,2),coor(4,1)] = ginput(1);
-                plot(coor(4,2),coor(4,1),'b+', 'MarkerSize', 25);
-                close all
-                together_coor(:,:,i)=floor(coor);
+                together_coor(:,:,i)=visLib.get_coordinates(pa,fi{1,i});
                 files{i}=fi;path(i)=string(pa);clear fi pa; i=i+1;
             end
             clear I
         end
         
+        function [coordinates]=get_coordinates(path,file)
+            I=1./double(imread(fullfile(path,file)));
+            [r,c,~]=size(I);
+            if r>c
+                figure,imshow(rot90(I),[])
+            else
+                figure,imshow(I,[])
+            end
+            % Selecting corners on a picture
+            [coor(1,2),coor(1,1)] = ginput(1);
+            hold on;
+            plot(coor(1,2),coor(1,1),'r+', 'MarkerSize', 25);
+            [coor(2,2),coor(2,1)] = ginput(1);
+            plot(coor(2,2),coor(2,1),'b+', 'MarkerSize', 25);
+            [coor(3,2),coor(3,1)] = ginput(1);
+            plot(coor(3,2),coor(3,1),'r+', 'MarkerSize', 25);
+            [coor(4,2),coor(4,1)] = ginput(1);
+            plot(coor(4,2),coor(4,1),'b+', 'MarkerSize', 25);
+            close all
+            coordinates=floor(coor);
+        end
     end
 end

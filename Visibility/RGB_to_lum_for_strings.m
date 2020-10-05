@@ -15,9 +15,9 @@ samples = 50; % Number of samples
 %If files put 1 if direcotries put 2
 fOd=2 ;
 if fOd==1
-    [files, path, Acoor]=get_files;
+    [files, path, Acoor]=visLib.get_files;
 else
-    [files, path, Acoor]=get_directories;
+    [files, path, Acoor]=visLib.get_directories;
 end
 long=length(path);
 lum=zeros([samples,long*3]);
@@ -54,7 +54,7 @@ for k=1:long
     for i=1:samples
         pic=double(imread(char(fullfile(path(k),files{k}(i)))))./255;
         [r,c,~]=size(pic);
-        coor(:,:,1)=check_size(coor(:,:,1),r,c);  coor(:,:,2)=check_size(coor(:,:,2),r,c);  coor(:,:,3)=check_size(coor(:,:,3),r,c);
+        coor(:,:,1)=visLib.check_size(coor(:,:,1),r,c);  coor(:,:,2)=check_size(coor(:,:,2),r,c);  coor(:,:,3)=check_size(coor(:,:,3),r,c);
         if r>c
             pic=rot90(pic);
         end
@@ -62,7 +62,7 @@ for k=1:long
             %Core processing loop
             picture=pic(coor(1,1,o):coor(2,1,o),coor(1,2,o):coor(2,2,o),:);
             if i==1;imshow(picture.*255);pause(2);close all;end
-            lum(i,k*3+o-3)=RGB2lum(reshape(picture(:),[],3));
+            lum(i,k*3+o-3)=visLib.RGB2lum(reshape(picture(:),[],3));
         end
     end
 end

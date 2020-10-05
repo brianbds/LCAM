@@ -14,7 +14,7 @@ classdef visLib
             coordinates = checkArray.*[1, 1; numRows, numCols]+ (~checkArray).*coordinates;
         end
         
-        function  [files, path, together_coor]= get_directories
+        function  [files, path, together_coor]= get_directories(num)
             filedatas=struct2table(dir(fullfile(uigetdir('C:\'),'**\*.jpg')));
             path=unique(string(filedatas.folder));
             l=char(filedatas.name)=='.';
@@ -24,20 +24,26 @@ classdef visLib
                 rw=find(string(filedatas.folder)==path(i));
                 files{1,i}=filedatas.name(rw(1):rw(end));
             end
-            together_coor=zeros([4 2 u]); i=1; clear rw filedatas
+            together_coor=zeros([4 2 u num]); i=1; j=1; clear rw filedatas
             while i<=u
-                together_coor(:,:,i)=visLib.get_coordinates(path(i),files{1,i}(1,1));
-                i=i+1;
+                while j<=num
+                    together_coor(:,:,i,j)=visLib.get_coordinates(path(i),files{1,i}(1,1));
+                    j=j+1;
+                end
+                i=i+1; j=1;
             end
         end
         
-        function [files, path, together_coor]=get_files
-            i=1;
+        function [files, path, together_coor]=get_files(num)
+            i=1; j=1;
             while 1==1
                 [fi,pa]= uigetfile('MultiSelect','on','*.jpg');
                 if str2double(string(pa))==0; break; end
-                together_coor(:,:,i)=visLib.get_coordinates(pa,fi{1,i});
-                files{i}=fi;path(i)=string(pa);clear fi pa; i=i+1;
+                while j<=num
+                    together_coor(:,:,i)=visLib.get_coordinates(pa,fi{1,i});
+                    j=j+1;
+                end
+                files{i}=fi;path(i)=string(pa);clear fi pa; i=i+1; j=1;
             end
             clear I
         end

@@ -1,6 +1,6 @@
 classdef visLib
     methods(Static)
-        
+        % Transform RGB picture to mean luminance from selected patch
         function [luminance]=RGB2lum(photo)
             photo(photo<=0.04045)=photo(photo<=0.04045)./12.92;
             photo(photo>0.04045)=(((photo(photo>0.04045)+0.055)./1.055)).^2.4;
@@ -9,13 +9,10 @@ classdef visLib
             luminance=mean2(nonzeros(photo));
         end
         
-        function [coordinates]=check_size(coordinates, numRows, numCols)
-            checkArray = [coordinates(1,1)<1, coordinates(1,2)<1; coordinates(2,1)>numRows, coordinates(2,2)>numCols];
-            coordinates = checkArray.*[1, 1; numRows, numCols]+ (~checkArray).*coordinates;
-        end
-        
+        % Gets alld files from all directoris inside specified mother
+        % directory then they will be processed
         function  [files, path, together_coor]= get_directories(num)
-            filedatas=struct2table(dir(fullfile(uigetdir('C:\'),'**\*.jpg')));
+            filedatas=struct2table(dir(fullfile(uigetdir('C:\'),char("**"+visLib.slash+"\*.jpg"))));
             path=unique(string(filedatas.folder));
             l=char(filedatas.name)=='.';
             filedatas(l(:,1),:)=[]; clear l
@@ -34,6 +31,8 @@ classdef visLib
             end
         end
         
+        % Get files where user is able to select as many as he likes but
+        % only the amount equal to the samples number will get processed
         function [files, path, together_coor]=get_files(num)
             i=1; j=1;
             while 1==1
@@ -48,6 +47,7 @@ classdef visLib
             clear I
         end
         
+        % Get patch coordinates
         function [coordinates]=get_coordinates(path,file)
             I=1./double(imread(fullfile(path,file)));
             [r,c,~]=size(I);
@@ -69,5 +69,15 @@ classdef visLib
             close all
             coordinates=floor(coor);
         end
+        
+        % Initialize slash between mar or win
+        function [slash]=slash
+            if ispc
+                slash = "\";
+            else
+                slash = "/";
+            end
+        end
+        
     end
 end

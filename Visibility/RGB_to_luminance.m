@@ -53,4 +53,3 @@ path=path(:); number_of_patches = num;
 plot(lum)
 clear N i filename files luminance picture RGBMultiplier Acoor c coor fi long k pa r s mask fOd j o num
 end
-

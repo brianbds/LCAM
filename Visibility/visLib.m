@@ -12,7 +12,7 @@ classdef visLib
         % Gets alld files from all directoris inside specified mother
         % directory then they will be processed
         function  [files, path, together_coor]= get_directories(num)
-            filedatas=struct2table(dir(fullfile(uigetdir('C:\'),char("**"+visLib.slash+"\*.jpg"))));
+            filedatas=struct2table(dir(fullfile(uigetdir('C:\'),char("**"+visLib.slash+"*.jpg"))));
             path=unique(string(filedatas.folder));
             l=char(filedatas.name)=='.';
             filedatas(l(:,1),:)=[]; clear l

@@ -27,29 +27,29 @@ for k=1:long
     if s(2)<samples
         files{1,k}(end+1:samples)=files{1,k}(end);
     end
-    % Creating mask for computations
-    picture=imread(char(fullfile(path(k),files{k}(1))));
+    % Creating mask for computations and selecting pixels for mean
+    picture=double(imread(char(fullfile(path(k),files{k}(1)))))./255;
     [r,c,~]=size(picture);
-     if r>c;[c,r,~]=size(picture);end
-     mask=false([r c num]); j=1;
-     while j<=num
-         mask(:,:,j) = poly2mask(Acoor(:,2,k,j),Acoor(:,1,k,j),r,c);
+     if r>c;[c,r,~]=size(picture);picture=rot90(picture);end
+     mask=false([r c num]);
+     for o=1:num
+         mask(:,:,o) = poly2mask(Acoor(:,2,k,o),Acoor(:,1,k,o),r,c);
+         [lum(1,k*num+o-num),pixels{o}]=visLib.RGB2lum(reshape(picture([mask(:,:,o),mask(:,:,o),mask(:,:,o)]),[],3));
          % Displaying picture
-         I=mask(:,:,j)./double(picture);  I(isnan(I))=255;  I(I==0)=255;
-         imshow(I);pause(2);close all; clear I
-         j=j+1;
+         I=mask(:,:,o)./picture;  I(isnan(I))=255;  I(I==0)=255; I(isinf(I))=255;
+         imshow(I./255);pause(2);close all; clear I
      end
     % Core processing loop
-    for i=1:samples
+    for i=2:samples
         picture=double(imread(char(fullfile(path(k),files{k}(i)))))./255;
         [r,c,~]=size(picture);
         if r>c;picture=rot90(picture);end
         for o=1:num
-            lum(i,k*num+o-num)=visLib.RGB2lum(reshape(picture([mask(:,:,o),mask(:,:,o),mask(:,:,o)]),[],3));
+            [lum(i,k*num+o-num)]=visLib.RGB2lum(reshape(picture([mask(:,:,o),mask(:,:,o),mask(:,:,o)]),[],3),pixels{o});
         end
     end
 end
 path=path(:); number_of_patches = num;
 plot(lum)
-clear N i filename files luminance picture RGBMultiplier Acoor c coor fi long k pa r s mask fOd j o num
+clear N i filename files luminance picture RGBMultiplier Acoor c coor fi long k pa r s mask fOd j o num pixels
 end

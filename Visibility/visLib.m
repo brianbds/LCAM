@@ -1,18 +1,23 @@
 classdef visLib
     methods(Static)
         % Transform RGB picture to mean luminance from selected patch
-        function [luminance]=RGB2lum(photo)
-            photo(photo<=0.04045)=photo(photo<=0.04045)./12.92;
-            photo(photo>0.04045)=(((photo(photo>0.04045)+0.055)./1.055)).^2.4;
-            photo=photo(:,1).*0.2126+photo(:,2).*0.7152+photo(:,3).*0.0722;
-            photo(photo<0.001)=0;
-            luminance=mean2(nonzeros(photo));
+        function [luminance,noise]=RGB2lum(picture,varargin)
+            picture(picture<=0.04045)=picture(picture<=0.04045)./12.92;
+            picture(picture>0.04045)=(((picture(picture>0.04045)+0.055)./1.055)).^2.4;
+            picture=picture(:,1).*0.2126+picture(:,2).*0.7152+picture(:,3).*0.0722;
+            %luminance=mean2(nonzeros(picture));
+            if nargin ==1
+                noise=picture>0.001;
+                luminance=mean(picture(noise));
+            else
+                luminance=mean(picture(varargin{1}));
+            end
         end
         
         % Gets alld files from all directoris inside specified mother
         % directory then they will be processed
         function  [files, path, together_coor]= get_directories(num)
-            filedatas=struct2table(dir(fullfile(uigetdir('C:\'),char("**"+visLib.slash+"*.jpg"))));
+            filedatas=struct2table(dir(fullfile(uigetdir('C:\'),char(fullfile("**","*.jpg")))));
             path=unique(string(filedatas.folder));
             l=char(filedatas.name)=='.';
             filedatas(l(:,1),:)=[]; clear l
@@ -68,15 +73,6 @@ classdef visLib
             plot(coor(4,2),coor(4,1),'b+', 'MarkerSize', 25);
             close all
             coordinates=floor(coor);
-        end
-        
-        % Initialize slash between mar or win
-        function [slash]=slash
-            if ispc
-                slash = "\";
-            else
-                slash = "/";
-            end
         end
         
     end

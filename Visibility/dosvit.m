@@ -11,8 +11,8 @@
 %  \______________________________________________/                 \____________________________________________/                                                                                                                      
 
 clear 
-number_of_patches_per_sample = 2;
-files_or_directories= 1 ; % If files put 1 if direcotries put 2
+number_of_patches_per_sample = 1;
+files_or_directories= 2 ; % If files put 1 if direcotries put 2
 count_of_samples = 50;
 
 [lum, paths]=images_import_and_processing(number_of_patches_per_sample, files_or_directories, count_of_samples);

@@ -40,6 +40,19 @@ nano(1,1)=380;
     end
     
     
+    %New algorytm for creating an index and 1 nm step
+    range = [floor(A(1,1))+2 ceil(A(1,end))-2];
+    nano = range(1):range(2);
+    result_1nm=zeros(numel(A)/length(A), length(nano));
+    for i=range(1):range(2)
+        idx=find(min(abs(A(1,:)-i))==abs(A(1,:)-i)); 
+        result_1nm(:,1-range(1)+i)=(A(:,idx-2)-12*A(:,idx-1)+120*A(:,idx)-12*A(:,idx+1)+A(:,idx+2))/98;
+   end
+    result_1nm(1,:)=nano;
+    %Select every n-th nanometer
+    nk=4;
+    i=0; r=1; while r~=0; i=i+1; r=rem(result_1nm(1,i),nk);  end
+    result_5nm=result_1nm(:,i:nk:end);
     
     
     
